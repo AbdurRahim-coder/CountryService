@@ -3,6 +3,8 @@ package com.countryservice.controller;
 import com.countryservice.beans.Country;
 import com.countryservice.services.ServiceForCountry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,13 +21,24 @@ public class CountryController {
     }
 
     @GetMapping("/getcountries/{id}")
-    public Country getCountryById(@PathVariable(value = "id") int id){
-        return service.GetCountryById(id);
+    public ResponseEntity<Country> getCountryById(@PathVariable(value = "id") int id){
+
+        try{
+            Country country = service.GetCountryById(id);
+            return new ResponseEntity<Country>(country, HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/getcountries/countryName")
-    public Country getCountryByName(@RequestParam(value="countryName") String countryName){
-        return service.GetCountryByName(countryName);
+    public ResponseEntity<Country> getCountryByName(@RequestParam(value="countryName") String countryName){
+        try{
+            Country country = service.GetCountryByName(countryName);
+            return new ResponseEntity<Country>(country,HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/addCountry")
@@ -33,9 +46,17 @@ public class CountryController {
         return service.addCountry(country);
     }
 
-    @PutMapping("/updateCountry")
-    public Country updateCountry(@RequestBody Country country){
-        return service.updateCountry(country);
+    @PutMapping("/updateCountry/{id}")
+    public ResponseEntity<Country> updateCountry(@PathVariable(value="id") int id, @RequestBody Country country){
+        try{
+           Country exist_country = service.GetCountryById(id);
+           exist_country.setCountryName(country.getCountryName());
+           exist_country.setCountryCapital(country.getCountryCapital());
+           Country con=service.updateCountry(exist_country);
+           return new ResponseEntity<Country>(con,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
     @DeleteMapping("/deleteCountry/{id}")
