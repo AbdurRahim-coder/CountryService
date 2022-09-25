@@ -18,14 +18,20 @@ public class ServiceForCountry {
 
     @Autowired
     CountryRepository countryrep;
-    public List<Country> GetAllCountry(){
-        return countryrep.findAll();
-    }
-    public Country GetCountryById(int id){
-        return countryrep.findById(id).get();
+    public List<Country> getAllCountry(){ return countryrep.findAll(); }
+    public Country getCountryById(int id){
+        List<Country> countries=countryrep.findAll();
+        Country country=null;
+
+        for(Country con : countries){
+            if(con.getId()==id){
+                country=con;
+            }
+        }
+        return country;
     }
 
-    public Country GetCountryByName(String countryName){
+    public Country getCountryByName(String countryName){
 
         List<Country> countries=countryrep.findAll();
         Country country=null;
@@ -36,8 +42,19 @@ public class ServiceForCountry {
         }
         return country;
     }
+
+    int getMaxId(){
+        List<Country> countries=countryrep.findAll();
+        int id=1;
+        for(Country con : countries){
+            if(con.getId()>id)
+                id= con.getId();
+        }
+        return id;
+
+    }
     public Country addCountry(Country country){
-        country.setId(countryrep.findAll().size()+1);
+        country.setId(getMaxId());
         countryrep.save(country);
         return country;
     }
@@ -46,12 +63,8 @@ public class ServiceForCountry {
         countryrep.save(country);
         return country;
     }
-    public AddResponse deleteCountry(int id){
-        countryrep.deleteById(id);
-        AddResponse addResponse = new AddResponse();
-        addResponse.setMsg("Country Deleted......");
-        addResponse.setId(id);
-        return addResponse;
+    public void deleteCountry(Country country){
+       countryrep.delete(country);
     }
 
 }

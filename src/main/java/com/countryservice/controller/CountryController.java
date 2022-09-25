@@ -17,14 +17,14 @@ public class CountryController {
 
     @GetMapping("getcountries")
     public List getCountries(){
-        return service.GetAllCountry();
+        return service.getAllCountry();
     }
 
     @GetMapping("/getcountries/{id}")
     public ResponseEntity<Country> getCountryById(@PathVariable(value = "id") int id){
 
         try{
-            Country country = service.GetCountryById(id);
+            Country country = service.getCountryById(id);
             return new ResponseEntity<Country>(country, HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -34,7 +34,7 @@ public class CountryController {
     @GetMapping("/getcountries/countryName")
     public ResponseEntity<Country> getCountryByName(@RequestParam(value="countryName") String countryName){
         try{
-            Country country = service.GetCountryByName(countryName);
+            Country country = service.getCountryByName(countryName);
             return new ResponseEntity<Country>(country,HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -49,7 +49,7 @@ public class CountryController {
     @PutMapping("/updateCountry/{id}")
     public ResponseEntity<Country> updateCountry(@PathVariable(value="id") int id, @RequestBody Country country){
         try{
-           Country exist_country = service.GetCountryById(id);
+           Country exist_country = service.getCountryById(id);
            exist_country.setCountryName(country.getCountryName());
            exist_country.setCountryCapital(country.getCountryCapital());
            Country con=service.updateCountry(exist_country);
@@ -59,9 +59,9 @@ public class CountryController {
         }
     }
 
-    @DeleteMapping("/deleteCountry/{id}")
-    public AddResponse deleteCountry(@PathVariable int id){
-        return service.deleteCountry(id);
+    @DeleteMapping("/deleteCountry/{country}")
+    public void deleteCountry(@PathVariable Country country){
+        service.deleteCountry(country);
     }
 
 }
